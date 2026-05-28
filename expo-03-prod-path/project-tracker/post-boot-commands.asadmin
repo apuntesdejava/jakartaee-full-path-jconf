@@ -1,0 +1,11 @@
+# 1. Crear el Pool de Conexiones
+# Fíjate en la magia: ${ENV=...}
+# Esto le dice a GlassFish: "No uses un valor fijo, lee la Variable de Entorno del sistema".
+create-jdbc-connection-pool  --datasourceclassname com.mysql.cj.jdbc.MysqlDataSource  --restype javax.sql.DataSource  --property "serverName=${ENV=DB_HOST}:portNumber=${ENV=DB_PORT}:databaseName=${ENV=DB_NAME}:user=${ENV=DB_USER}:password=${ENV=DB_PASSWORD}:useSSL=false:allowPublicKeyRetrieval=true"  ProjectTrackerPool
+
+# 2. Crear el Recurso JNDI (El nombre que usa JPA en persistence.xml)
+create-jdbc-resource  --connectionpoolid ProjectTrackerPool  jdbc/projectTracker
+
+# 3. Configurar la Cola JMS (Sesión 9)
+# (Si usaste @JMSDestinationDefinition en Java, esto es opcional,
+# pero hacerlo aquí es más "Infrastructure as Code")
