@@ -1,5 +1,5 @@
 ---
-theme: nord
+theme: default
 title: Jakarta EE 11 en 45 minutos
 info: |
   Una charla sobre construir una aplicación empresarial completa con Java,
@@ -19,6 +19,12 @@ mdc: true
 
 JConf - ProjectTracker
 
+<!--
+Nota:
+Abrir dejando claro que no es un tour API por API.
+La pregunta guía: ¿cuánto puedo resolver hoy con Java 21, Jakarta EE 11 y GlassFish 8 antes de traer herramientas externas por costumbre?
+-->
+
 ---
 
 # La tesis
@@ -27,7 +33,14 @@ Jakarta EE 11 permite construir una aplicación empresarial completa usando Java
 
 No se trata de prohibir Angular, React u otras herramientas.
 
-Se trata de no traerlas por reflejo cuando el estandar ya resuelve el caso.
+Se trata de no traerlas por reflejo cuando el estándar ya resuelve el caso.
+
+<!--
+Nota:
+Insistir en el matiz: no es una charla anti-frontend.
+La provocación es contra el reflejo automático, no contra React o Angular.
+Frase clave: "No se trata de prohibir herramientas externas, se trata de no traerlas por reflejo."
+-->
 
 ---
 
@@ -45,7 +58,13 @@ ProjectTracker:
 - Observabilidad
 - Despliegue con GlassFish 8
 
-[Repositorio del tutorial](../README.md)
+[Repositorio de la charla](../README.md)
+
+<!--
+Nota:
+Presentar ProjectTracker como hilo conductor: proyectos, tareas, seguridad, API, UI, eventos, procesos asíncronos, observabilidad y despliegue.
+La idea es que la audiencia vea una aplicación completa, no ejemplos aislados.
+-->
 
 ---
 
@@ -59,7 +78,13 @@ Para una charla de 45 minutos, la historia se entiende mejor como un solo camino
 2. El camino de la experiencia
 3. El camino de producción
 
-[Tabla de contenidos completa](../SUMMARY.md)
+[Mapa del repositorio](../SUMMARY.md)
+
+<!--
+Nota:
+Explicar que el tutorial completo estaba organizado por sesiones, pero en 45 minutos eso se vuelve una lista.
+Reencuadrar la charla como tres caminos: dato, experiencia y producción.
+-->
 
 ---
 layout: section
@@ -70,6 +95,11 @@ layout: section
 ## El camino del dato
 
 Cómo modelo, valido, expongo y persisto información.
+
+<!--
+Nota:
+Objetivo del acto: pasar de una superficie HTTP a un modelo persistente, validado y expresado con repositorios declarativos.
+-->
 
 ---
 
@@ -84,8 +114,14 @@ Primero aparece la superficie HTTP:
 
 Sesiones:
 
-- [Sesión 0: Setup y Hola Mundo](../session-00-setup/README.md)
-- [Sesión 1: API REST](../session-01-jaxrs/README.md)
+- [Expo 00: Setup local](../expo-00-setup/create-jdbc.asadmin.md)
+- [Expo 01: Camino del dato](../expo-01-data-path/project-tracker/README.md)
+
+<!--
+Nota:
+REST y JSON-B son la puerta de entrada, pero el punto importante es arquitectónico.
+El endpoint debe ser una frontera, no el lugar donde vive todo el negocio.
+-->
 
 ---
 
@@ -100,7 +136,13 @@ Jakarta CDI conecta las piezas:
 - Qualifiers
 - Separación entre API y servicio
 
-[Sesión 2: CDI](../session-02-cdi/README.md)
+[Expo 01: CDI en el camino del dato](../expo-01-data-path/project-tracker/README.md)
+
+<!--
+Nota:
+CDI mueve el centro de gravedad fuera del recurso REST.
+Frase clave: "El endpoint habla HTTP; el servicio habla negocio."
+-->
 
 ---
 
@@ -116,7 +158,13 @@ Jakarta Persistence permite modelar:
 - `@Embeddable`
 - Records y tipos modernos de Java
 
-[Sesión 3: JPA](../session-03-jpa/README.md)
+[Expo 01: Persistencia con Jakarta Persistence](../expo-01-data-path/project-tracker/README.md)
+
+<!--
+Nota:
+No vender JPA por nostalgia.
+El mensaje es que el modelo persistente sigue siendo una pieza central de una aplicación empresarial.
+-->
 
 ---
 
@@ -133,7 +181,13 @@ public record ProjectDTO(
 ) {}
 ```
 
-[Sesión 4: Validation](../session-04-validation/README.md)
+[Expo 01: Validación del contrato REST](../expo-01-data-path/project-tracker/README.md)
+
+<!--
+Nota:
+La validación no debería estar escondida en condicionales sueltos.
+Si el nombre es obligatorio y tiene reglas, eso pertenece al contrato.
+-->
 
 ---
 
@@ -152,7 +206,14 @@ public interface ProjectRepository
 
 Menos infraestructura manual, más intención de negocio.
 
-[Sesión 5: Jakarta Data](../session-05-data/README.md)
+[Expo 01: Jakarta Data](../expo-01-data-path/project-tracker/README.md)
+
+<!--
+Nota:
+Marcar este como uno de los momentos importantes de Jakarta EE 11.
+Menos código de acceso a datos que no aporta lenguaje de negocio.
+Frase clave: "Menos ruido, más intención."
+-->
 
 ---
 
@@ -172,6 +233,12 @@ Mensaje:
 
 > REST, JSON, validación, CDI, transacciones y datos bajo contratos estándar.
 
+<!--
+Nota:
+Mostrar GET, POST, validación fallando, ProjectRepository y servicio usando repositorio declarativo.
+Cierre: todavía no salimos del ecosistema Jakarta EE.
+-->
+
 ---
 layout: section
 ---
@@ -181,6 +248,12 @@ layout: section
 ## El camino de la experiencia
 
 Puedo entregar una aplicación usable sin traer una SPA por defecto.
+
+<!--
+Nota:
+Transición: aquí normalmente alguien dice "backend terminado, ahora necesitamos una SPA".
+Respuesta: depende.
+-->
 
 ---
 
@@ -194,7 +267,13 @@ Jakarta Faces permite construir pantallas transaccionales con el mismo modelo de
 - Tablas
 - validación integrada
 
-[Sesión 6: Jakarta Faces](../session-06-faces/README.md)
+[Expo 02: Jakarta Faces](../expo-02-exp-path/project-tracker/README.md)
+
+<!--
+Nota:
+Jakarta Faces tiene sentido en aplicaciones internas, administrativas y transaccionales.
+No venderlo como reemplazo universal del frontend rico.
+-->
 
 ---
 
@@ -210,7 +289,13 @@ Jakarta Security permite combinar:
 - JWT para REST
 - Identity store para pruebas y demo
 
-[Sesión 7: Security](../session-07-security/README.md)
+[Expo 02: Seguridad integrada](../expo-02-exp-path/project-tracker/README.md)
+
+<!--
+Nota:
+Proteger pantalla y endpoint no deberían ser mundos separados.
+La seguridad entra como parte del modelo de aplicación, no como una pieza pegada al final.
+-->
 
 ---
 
@@ -225,7 +310,13 @@ Jakarta WebSocket + CDI Events:
 - Broadcast a sesiones conectadas
 - Dashboard reactivo desde Java
 
-[Sesión 11: WebSockets](../session-11-websockets/README.md)
+[Expo 02: WebSockets y CDI Events](../expo-02-exp-path/project-tracker/README.md)
+
+<!--
+Nota:
+Explicar el patrón: servicio cambia algo, dispara evento CDI, WebSocket transmite a clientes conectados.
+Suficiente para dashboards internos y notificaciones empresariales.
+-->
 
 ---
 
@@ -245,6 +336,12 @@ Mensaje:
 
 > Para muchas apps empresariales, server-side UI reduce piezas móviles sin renunciar a productividad.
 
+<!--
+Nota:
+Mostrar login, pantalla de proyectos, creación desde UI, endpoint protegido.
+WebSocket solo si el entorno está estable.
+-->
+
 ---
 layout: section
 ---
@@ -254,6 +351,12 @@ layout: section
 ## El camino de producción
 
 Esto debe poder operar más allá del laptop.
+
+<!--
+Nota:
+Transición: una aplicación empresarial no termina cuando responde en localhost.
+Producción implica ejecución asíncrona, operación, despliegue y señales observables.
+-->
 
 ---
 
@@ -270,7 +373,13 @@ Jakarta Concurrency 3.1 se encuentra con Java 21.
 
 El runtime gestiona contexto, seguridad y ejecución asíncrona.
 
-[Sesión 8: Virtual Threads](../session-08-virtual_threads/README.md)
+[Expo 03: Virtual threads con Jakarta Concurrency](../expo-03-prod-path/project-tracker/README.md)
+
+<!--
+Nota:
+Java 21 y virtual threads vuelven especialmente interesante a Jakarta Concurrency.
+El punto clave: no crear hilos a mano; el runtime sigue gestionando contexto, seguridad y ciclo de vida.
+-->
 
 ---
 
@@ -287,9 +396,16 @@ Jakarta EE cubre varios patrones:
 
 Sesiones:
 
-- [Sesión 9: Messaging](../session-09-messaging/README.md)
-- [Sesión 10: Schedule](../session-10-schedule/README.md)
-- [Sesión 13: Batch](../session-13-batch/README.md)
+- [Expo 03: Jakarta Messaging](../expo-03-prod-path/project-tracker/README.md)
+- [Expo 03: EJB Timer](../expo-03-prod-path/project-tracker/README.md)
+- [Expo 03: Jakarta Batch](../expo-03-prod-path/project-tracker/README.md)
+
+<!--
+Nota:
+No todo debe ocurrir dentro de una request HTTP.
+JMS/MDB para desacoplar, @Schedule para tareas periódicas, Batch para procesos largos por chunks.
+La idea no es usar todo siempre; es tener opciones estándar.
+-->
 
 ---
 
@@ -303,7 +419,13 @@ GlassFish 8 integra MicroProfile para operar la aplicación:
 - Logs con Loki
 - Prometheus + Loki + Grafana como visor local
 
-[Sesión 12: Health & Metrics](../session-12-health/README.md)
+[Expo 03: Health & Metrics](../expo-03-prod-path/project-tracker/README.md)
+
+<!--
+Nota:
+Health, readiness y métricas permiten que la app hable el idioma de plataformas cloud.
+Frase clave: "Producción no es solamente empaquetar un WAR."
+-->
 
 ---
 
@@ -318,6 +440,12 @@ Una forma reproducible de llevarlo a producción:
 Referencia:
 
 - [Expo 03: Docker + GlassFish 8 + MySQL](../expo-03-prod-path/project-tracker/README.md)
+
+<!--
+Nota:
+El valor no es solo "corre en Docker".
+El valor es una configuración reproducible: WAR, GlassFish 8, driver MySQL, pool JDBC por asadmin y variables de entorno.
+-->
 
 ---
 
@@ -339,17 +467,31 @@ Mensaje:
 
 > La plataforma no termina en escribir endpoints: también cubre concurrencia, operación y despliegue.
 
+<!--
+Nota:
+Mostrar reporte asíncrono, logs con VirtualThread, /health, /metrics y dashboard O11Y si está listo.
+Cierre: la plataforma también cubre señales para observarla.
+-->
+
 ---
 
 # El mapa completo
 
 | Acto        | Pregunta                           | Sesiones                 |
 |-------------|------------------------------------|--------------------------|
-| Dato        | Como modelo y persisto informacion | 0, 1, 2, 3, 4, 5         |
+| Dato        | Como modelo y persisto información | 0, 1, 2, 3, 4, 5         |
 | Experiencia | Como entrego una app usable        | 6, 7, 11                 |
 | Produccion  | Como escalo, opero y despliego     | 8, 9, 10, 12, 13, 14, 15 |
 
-[Tabla de contenidos](../SUMMARY.md)
+[Mapa del repositorio](../SUMMARY.md)
+
+<!--
+Nota:
+Usar esta slide para respirar y volver a la historia completa.
+Dato: contrato y persistencia.
+Experiencia: UI, seguridad, tiempo real.
+Producción: concurrencia, mensajería, batch, observabilidad, despliegue.
+-->
 
 ---
 
@@ -367,6 +509,12 @@ La propuesta no es menos frontend.
 
 La propuesta es elegir con criterio.
 
+<!--
+Nota:
+Ser justo: React y Angular aportan mucho cuando hay interacción altamente dinámica, estado complejo en cliente o equipos frontend especializados.
+El mensaje maduro no es "SPA nunca"; es "no por reflejo".
+-->
+
 ---
 
 # Cuando Jakarta Faces tiene sentido
@@ -381,7 +529,13 @@ Brilla en aplicaciones:
 - Equipos Java full-stack
 - Menor tolerancia a integración accidental
 
-[Sesión 6: Jakarta Faces](../session-06-faces/README.md)
+[Expo 02: Jakarta Faces](../expo-02-exp-path/project-tracker/README.md)
+
+<!--
+Nota:
+Conectar con el tipo de aplicación: interna, administrativa, transaccional, seguridad fuerte, formularios y tablas.
+Frase clave: "No toda aplicación necesita pagar el costo de una SPA."
+-->
 
 ---
 
@@ -402,6 +556,14 @@ Es una plataforma estándar para construir aplicaciones completas:
 - Despliegue
 
 Todo con Java como columna vertebral.
+
+<!--
+Nota:
+Cierre:
+Jakarta EE 11 no es una colección de APIs viejas.
+Es una plataforma estándar para construir aplicaciones completas.
+La decisión madura no es SPA siempre ni server-side siempre; es elegir con criterio.
+-->
 
 ---
 
