@@ -3,8 +3,8 @@ import { check, fail, sleep } from 'k6';
 import { Counter, Rate } from 'k6/metrics';
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080/project-tracker/resources';
-const USERNAME = __ENV.USERNAME || 'admin';
-const PASSWORD = __ENV.PASSWORD || 'admin123';
+const LOGIN_USERNAME = __ENV.K6_USERNAME || __ENV.PROJECT_TRACKER_USERNAME || 'admin';
+const LOGIN_PASSWORD = __ENV.K6_PASSWORD || __ENV.PROJECT_TRACKER_PASSWORD || 'admin123';
 
 http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }, 401, 403));
 
@@ -36,7 +36,7 @@ export const options = {
 };
 
 export function setup() {
-  const token = login(USERNAME, PASSWORD);
+  const token = login(LOGIN_USERNAME, LOGIN_PASSWORD);
 
   if (!token) {
     fail('No se pudo obtener token JWT para la prueba autenticada');

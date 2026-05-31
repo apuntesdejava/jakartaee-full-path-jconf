@@ -1,0 +1,25 @@
+FROM payara/server-full:7.2026.5
+
+ENV MYSQL_CONNECTOR_VERSION=9.7.0
+
+USER root
+
+# 1. Copiar el mismo WAR Jakarta EE que tambien corre en GlassFish.
+COPY target/project-tracker.war /opt/payara/deployments/project-tracker.war
+
+# 2. Registrar un script de arranque Payara antes del generador de deploys oficial.
+COPY payara-init.sh /opt/payara/scripts/init_0_project_tracker_jdbc.sh
+
+# 3. Descargar el driver JDBC de MySQL dentro del dominio Payara.
+ADD https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/${MYSQL_CONNECTOR_VERSION}/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar \
+    /opt/payara/appserver/glassfish/domains/domain1/lib/mysql-connector-j.jar
+
+RUN chmod +x /opt/payara/scripts/init_0_project_tracker_jdbc.sh \
+    && chown payara:payara \
+        /opt/payara/deployments/project-tracker.war \
+        /opt/payara/scripts/init_0_project_tracker_jdbc.sh \
+        /opt/payara/appserver/glassfish/domains/domain1/lib/mysql-connector-j.jar
+
+USER payara
+
+EXPOSE 8080 4848

@@ -13,6 +13,12 @@ scrape_configs:
     static_configs:
       - targets:
           - project-tracker-container:8080
+        labels:
+          runtime: glassfish
+      - targets:
+          - project-tracker-payara-container:8080
+        labels:
+          runtime: payara
 
   - job_name: project-tracker-readiness
     metrics_path: /probe
@@ -22,6 +28,12 @@ scrape_configs:
     static_configs:
       - targets:
           - http://project-tracker-container:8080/health/ready
+        labels:
+          runtime: glassfish
+      - targets:
+          - http://project-tracker-payara-container:8080/health/ready
+        labels:
+          runtime: payara
     relabel_configs:
       - source_labels:
           - __address__

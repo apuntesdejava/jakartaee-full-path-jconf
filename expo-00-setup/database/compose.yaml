@@ -11,6 +11,7 @@ services:
       - "3306:3306" # Map host port 3306 to container port 3306
     volumes:
       - mysql_data:/var/lib/mysql # Persist data in a named volume
+      - ./initdb:/docker-entrypoint-initdb.d:ro # Inicializa el esquema cuando el volumen nace vacio
 
   prometheus:
     image: prom/prometheus:latest

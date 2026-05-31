@@ -186,21 +186,45 @@ Todo esto se le llama "Infrastructure as Code".
 
 -----
 
+## 2.1\. Esquema de Base de Datos en Producción
+
+En `expo-01` y `expo-02` usamos `drop-and-create` porque ayuda durante la demo: cada despliegue deja la base en un estado conocido.
+En esta etapa eso ya no representa un comportamiento de producción, porque redeplegar la aplicación no debe borrar los datos.
+
+Por eso, en [`persistence.xml`](src/main/resources/META-INF/persistence.xml) la generación de esquema queda desactivada:
+
+```xml
+<property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+```
+
+El esquema inicial para el entorno Docker vive fuera del WAR, en [`expo-00-setup/database/initdb/01-project-tracker.sql`](../../expo-00-setup/database/initdb/01-project-tracker.sql).
+MySQL ejecuta ese script solamente cuando el volumen `mysql_data` nace vacío. Si quieres reiniciar la demo desde cero:
+
+```powershell
+cd ../../expo-00-setup/database
+docker compose down -v
+docker compose up -d
+```
+
+En un entorno real, este mismo rol lo tomaría una herramienta de migraciones como Flyway, Liquibase o el pipeline de base de datos de la organización.
+
+-----
+
 ## 3\. Paso 3: Construir la Imagen
 
-Primero, asegúrate de tener el `.war` actualizado:
+Maven construye el `.war` y la imagen Docker en un solo paso usando perfiles:
 
 ```sh
-mvn clean package
+mvn -Pdist-glassfish package
 ```
 
-Ahora, construye la imagen Docker. Le pondremos el nombre (tag) `project-tracker:v1`.
+Esto usa [`Dockerfile`](Dockerfile) y crea la imagen:
 
 ```sh
-docker build -t project-tracker:v1 .
+project-tracker-prod-path:glassfish
 ```
 
-*Esto descargará la imagen base de GlassFish desde GHCR y copiará tu aplicación dentro.*
+El perfil compila `target/project-tracker.war`, descarga la imagen base de GlassFish desde GHCR y copia tu aplicación dentro.
 
 -----
 
@@ -260,7 +284,7 @@ docker run -d \
   -e DB_NAME="PROJECT_TRACKER" \
   -e DB_USER="PROJECT_TRACKER" \
   -e DB_PASSWORD="PROJECT_TRACKER" \
-  project-tracker:v1
+  project-tracker-prod-path:glassfish
 ```
 \
 **Powershell:**
@@ -275,7 +299,7 @@ docker run -d `
   -e DB_NAME="PROJECT_TRACKER" `
   -e DB_USER="PROJECT_TRACKER" `
   -e DB_PASSWORD="PROJECT_TRACKER" `
-  "project-tracker:v1"
+  "project-tracker-prod-path:glassfish"
 ```
 
 **Desglose del comando:**
@@ -311,6 +335,60 @@ docker run -d `
 
 -----
 
+## 5.1\. Variante: El mismo WAR en Payara 7
+
+Para demostrar portabilidad Jakarta EE, este proyecto también incluye [`Dockerfile-payara`](Dockerfile-payara).
+La aplicación no cambia: se usa el mismo `target/project-tracker.war`, el mismo `persistence.xml` y el mismo recurso JNDI `jdbc/projectTracker`.
+
+La diferencia está en el runtime:
+
+- `Dockerfile` usa **Eclipse GlassFish 8**.
+- `Dockerfile-payara` usa **Payara Server 7**.
+- [`payara-init.sh`](payara-init.sh) prepara el pool JDBC de forma idempotente antes del despliegue final.
+
+Construye la imagen Payara con Maven:
+
+```powershell
+mvn -Pdist-payara package
+```
+
+Esto usa [`Dockerfile-payara`](Dockerfile-payara) y crea la imagen `project-tracker-prod-path:payara`.
+
+Ejecuta Payara en la misma red de MySQL. En este ejemplo uso puertos alternos para poder comparar con GlassFish sin apagarlo:
+
+```powershell
+docker rm -f project-tracker-payara-container
+
+docker run -d `
+  -p "9080:8080" `
+  -p "9484:4848" `
+  --name project-tracker-payara-container `
+  --net database_default `
+  -e DB_HOST="project_tracker_mysql_db" `
+  -e DB_PORT="3306" `
+  -e DB_NAME="PROJECT_TRACKER" `
+  -e DB_USER="PROJECT_TRACKER" `
+  -e DB_PASSWORD="PROJECT_TRACKER" `
+  "project-tracker-prod-path:payara"
+```
+
+Verifica:
+
+- Aplicación: `http://localhost:9080/project-tracker/`
+- Health: `http://localhost:9080/health/ready`
+- API: `http://localhost:9080/project-tracker/resources/projects`
+- Metrics: `http://localhost:9080/project-tracker/resources/observability/metrics`
+
+Busca en logs:
+
+```powershell
+docker logs -f project-tracker-payara-container
+```
+
+Deberías ver que Payara ejecuta `init_0_project_tracker_jdbc.sh`, crea `ProjectTrackerPool`, registra `jdbc/projectTracker` y despliega `project-tracker.war`.
+
+-----
+
 ## 6\. La Cereza: Observabilidad Local
 
 El compose de [`expo-00-setup/database`](../../expo-00-setup/database/compose.yaml) también puede levantar un pequeño stack O11Y:
@@ -342,7 +420,7 @@ docker run -d `
   -e DB_NAME="PROJECT_TRACKER" `
   -e DB_USER="PROJECT_TRACKER" `
   -e DB_PASSWORD="PROJECT_TRACKER" `
-  "project-tracker:v1"
+  "project-tracker-prod-path:glassfish"
 ```
 
 Abre:
@@ -358,5 +436,5 @@ En Grafana encontrarás el dashboard **ProjectTracker O11Y**. Para generar seña
 
 -----
  
-¡Listo\! Has empaquetado tu aplicación Jakarta EE en una unidad inmutable. Ahora puedes llevar esa imagen `project-tracker:v1` a cualquier servidor, Kubernetes o nube, y funcionará exactamente igual.
+¡Listo\! Has empaquetado tu aplicación Jakarta EE en una unidad inmutable. Ahora puedes construir `project-tracker-prod-path:glassfish` o `project-tracker-prod-path:payara` desde Maven y demostrar la portabilidad del mismo WAR en dos runtimes Jakarta EE.
  
