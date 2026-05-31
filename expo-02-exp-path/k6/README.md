@@ -10,8 +10,8 @@ Variables utiles:
 
 ```powershell
 $env:BASE_URL = "http://localhost:8080/project-tracker/resources"
-$env:USERNAME = "admin"
-$env:PASSWORD = "admin123"
+$env:K6_USERNAME = "admin"
+$env:K6_PASSWORD = "admin123"
 k6 run .\auth-stress.js
 ```
 
@@ -20,8 +20,8 @@ Sin instalar k6, usando Docker:
 ```powershell
 Get-Content .\auth-stress.js | docker run --rm -i `
   -e BASE_URL="http://host.docker.internal:8080/project-tracker/resources" `
-  -e USERNAME="admin" `
-  -e PASSWORD="admin123" `
+  -e K6_USERNAME="admin" `
+  -e K6_PASSWORD="admin123" `
   grafana/k6 run -
 ```
 

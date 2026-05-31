@@ -2,12 +2,19 @@ import http from 'k6/http';
 import { check, fail, sleep } from 'k6';
 import { Counter, Rate } from 'k6/metrics';
 
-const APP_URL = __ENV.APP_URL || 'http://localhost:8080';
+const SERVER = (__ENV.SERVER || 'GF').toUpperCase();
+const DEFAULT_PORT = SERVER === 'PY' || SERVER === 'PAYARA' ? '9080' : '8080';
+const SCHEME = __ENV.SCHEME || 'http';
+const HOST = __ENV.HOST || 'localhost';
+const PORT = __ENV.PORT || DEFAULT_PORT;
+const APP_URL = __ENV.APP_URL || `${SCHEME}://${HOST}:${PORT}`;
 const API_BASE_URL = __ENV.API_BASE_URL || `${APP_URL}/project-tracker/resources`;
 const HEALTH_URL = __ENV.HEALTH_URL || `${APP_URL}/health/ready`;
 const METRICS_URL = __ENV.METRICS_URL || `${API_BASE_URL}/observability/metrics`;
 const USERNAME = __ENV.USERNAME || 'admin';
 const PASSWORD = __ENV.PASSWORD || 'admin123';
+const TASKS_PER_PROJECT = positiveInt(__ENV.TASKS_PER_PROJECT, 3);
+const PROJECT_POOL_SIZE = positiveInt(__ENV.PROJECT_POOL_SIZE, 5);
 
 const loginSuccess = new Rate('project_tracker_k6_login_success');
 const healthUp = new Rate('project_tracker_k6_health_up');
@@ -65,13 +72,19 @@ export function setup() {
     fail('No se pudo obtener token JWT para la prueba O11Y');
   }
 
-  const seedProjectId = createProject(token, 'seed');
-
-  if (!seedProjectId) {
-    fail('No se pudo crear proyecto semilla para tareas/reportes');
+  const projectIds = [];
+  for (let i = 0; i < PROJECT_POOL_SIZE; i += 1) {
+    const projectId = createProject(token, `seed-${i + 1}`);
+    if (projectId) {
+      projectIds.push(projectId);
+    }
   }
 
-  return { token, seedProjectId };
+  if (projectIds.length === 0) {
+    fail('No se pudo crear ningun proyecto semilla para tareas/reportes');
+  }
+
+  return { token, projectIds };
 }
 
 export function apiLoad(data) {
@@ -80,11 +93,14 @@ export function apiLoad(data) {
   if (roll < 0.45) {
     listProjects();
   } else if (roll < 0.7) {
-    createProject(data.token, 'load');
+    const projectId = createProject(data.token, 'load');
+    if (projectId) {
+      createTasksForProject(data.token, projectId, TASKS_PER_PROJECT);
+    }
   } else if (roll < 0.9) {
-    createTask(data.token, data.seedProjectId);
+    createTasksForProject(data.token, randomProjectId(data.projectIds), TASKS_PER_PROJECT);
   } else {
-    requestReport(data.token, data.seedProjectId);
+    requestReport(data.token, randomProjectId(data.projectIds));
   }
 
   sleep(Math.random());
@@ -169,11 +185,11 @@ function createProject(token, label) {
   return Number(readJson(response).id);
 }
 
-function createTask(token, projectId) {
+function createTask(token, projectId, sequence = 1) {
   const response = http.post(
     `${API_BASE_URL}/projects/${projectId}/tasks`,
     JSON.stringify({
-      title: `k6 task ${__VU}-${__ITER}-${Date.now()}`,
+      title: `k6 task ${sequence}/${TASKS_PER_PROJECT} ${__VU}-${__ITER}-${Date.now()}`,
       status: 'TODO',
     }),
     authJsonParams(token, 'tasks_create')
@@ -185,6 +201,14 @@ function createTask(token, projectId) {
 
   if (ok) {
     createdTasks.add(1);
+  }
+
+  return ok;
+}
+
+function createTasksForProject(token, projectId, total) {
+  for (let i = 0; i < total; i += 1) {
+    createTask(token, projectId, i + 1);
   }
 }
 
@@ -227,4 +251,13 @@ function readJson(response) {
   } catch (error) {
     return {};
   }
+}
+
+function randomProjectId(projectIds) {
+  return projectIds[Math.floor(Math.random() * projectIds.length)];
+}
+
+function positiveInt(value, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
