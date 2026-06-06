@@ -15,7 +15,7 @@ mdc: true
 
 # Jakarta EE 11 en 45 minutos
 
-## De cero a una aplicación empresarial completa con Java y GlassFish 8
+## De cero a una aplicación empresarial completa con Java y GlassFish 8 / Payara 7
 
 JConf - ProjectTracker
 
@@ -56,7 +56,7 @@ ProjectTracker:
 - Eventos en tiempo real
 - Procesos asíncronos
 - Observabilidad
-- Despliegue con GlassFish 8
+- Despliegue con GlassFish 8 / GlassFish 7
 
 [Repositorio de la charla](../README.md)
 
@@ -68,9 +68,9 @@ La idea es que la audiencia vea una aplicación completa, no ejemplos aislados.
 
 ---
 
-# No voy a recorrer 16 carpetas
+# No voy a recorrer el repo carpeta por carpeta
 
-El repositorio está organizado como sesiones incrementales.
+El repositorio viene de un tutorial incremental.
 
 Para una charla de 45 minutos, la historia se entiende mejor como un solo camino:
 
@@ -82,7 +82,7 @@ Para una charla de 45 minutos, la historia se entiende mejor como un solo camino
 
 <!--
 Nota:
-Explicar que el tutorial completo estaba organizado por sesiones, pero en 45 minutos eso se vuelve una lista.
+Explicar que el tutorial completo tiene una estructura incremental, pero en 45 minutos eso se vuelve una lista.
 Reencuadrar la charla como tres caminos: dato, experiencia y producción.
 -->
 
