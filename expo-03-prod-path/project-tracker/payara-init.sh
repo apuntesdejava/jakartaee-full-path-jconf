@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+#set -euo pipefail
 
 : "${DB_HOST:?DB_HOST is required}"
 : "${DB_PORT:?DB_PORT is required}"

@@ -1,4 +1,4 @@
-FROM payara/server-full:7.2026.5
+FROM payara/server-full:7.2026.6
 
 ENV MYSQL_CONNECTOR_VERSION=9.7.0
 

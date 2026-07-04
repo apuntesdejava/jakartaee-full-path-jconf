@@ -34,7 +34,7 @@ ON DUPLICATE KEY UPDATE
 
 INSERT INTO TASK (ID, TITLE, STATUS, PROJECT_ID, CREATEDBY, CREATEDAT)
 VALUES
-    (1, 'Disenar Homepage', 'Completada', 1, 'import_user', '2025-01-02'),
+    (1, 'Diseñar Homepage', 'Completada', 1, 'import_user', '2025-01-02'),
     (2, 'Desarrollar formulario de contacto', 'En Progreso', 1, 'import_user', '2025-01-03'),
     (3, 'Definir API de Tareas', 'Completada', 2, 'import_user', '2025-01-11'),
     (4, 'Testear login de usuario', 'Pendiente', 2, 'import_user', '2025-01-12'),

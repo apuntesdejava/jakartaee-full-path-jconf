@@ -3,7 +3,7 @@
   <persistence-unit name="project-tracker-pu" transaction-type="JTA">
     <jta-data-source>jdbc/projectTracker</jta-data-source>
     <properties>
-      <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
       <property name="jakarta.persistence.sql-load-script-source" value="META-INF/sql/import.sql"/>
       <property name="eclipselink.logging.level.sql" value="FINE"/>
       <property name="eclipselink.logging.parameters" value="true"/>
