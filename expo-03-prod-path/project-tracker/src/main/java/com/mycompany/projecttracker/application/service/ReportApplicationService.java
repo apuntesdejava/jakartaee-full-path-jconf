@@ -23,7 +23,8 @@ public class ReportApplicationService implements ReportUseCase {
     public CompletableFuture<Void> generateReportAsync(Long projectId, String userInitiator) {
         return CompletableFuture.runAsync(() -> {
             try {
-                LOGGER.info(() -> "--> Iniciando reporte para Proyecto ID: " + projectId + " solicitado por: " + userInitiator);
+                LOGGER.info(() -> "--> Iniciando reporte para Proyecto ID: %d solicitado por: %s".formatted(projectId,
+                                                                                                            userInitiator));
                 LOGGER.info(() -> "--> Corriendo en Hilo: " + Thread.currentThread());
                 Thread.sleep(5000);
                 LOGGER.info(() -> "--> Reporte finalizado para Proyecto ID: " + projectId);

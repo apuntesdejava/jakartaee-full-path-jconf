@@ -1,7 +1,13 @@
 # 1. Crear el Pool de Conexiones
 # Fíjate en la magia: ${ENV=...}
 # Esto le dice a GlassFish: "No uses un valor fijo, lee la Variable de Entorno del sistema".
-create-jdbc-connection-pool  --datasourceclassname com.mysql.cj.jdbc.MysqlDataSource  --restype javax.sql.DataSource  --property "serverName=${ENV=DB_HOST}:portNumber=${ENV=DB_PORT}:databaseName=${ENV=DB_NAME}:user=${ENV=DB_USER}:password=${ENV=DB_PASSWORD}:useSSL=false:allowPublicKeyRetrieval=true"  ProjectTrackerPool
+create-jdbc-connection-pool  --datasourceclassname com.mysql.cj.jdbc.MysqlDataSource  --restype javax.sql.DataSource  --isconnectvalidatereq=true  --validationmethod=auto-commit  --failconnection=true  --creationretryattempts=10  --creationretryinterval=5  --property "serverName=${ENV=DB_HOST}:portNumber=${ENV=DB_PORT}:databaseName=${ENV=DB_NAME}:user=${ENV=DB_USER}:password=${ENV=DB_PASSWORD}:useSSL=false:allowPublicKeyRetrieval=true"  ProjectTrackerPool
+
+set resources.jdbc-connection-pool.ProjectTrackerPool.connection-validation-method=auto-commit
+set resources.jdbc-connection-pool.ProjectTrackerPool.is-connection-validation-required=true
+set resources.jdbc-connection-pool.ProjectTrackerPool.fail-all-connections=true
+set resources.jdbc-connection-pool.ProjectTrackerPool.connection-creation-retry-attempts=10
+set resources.jdbc-connection-pool.ProjectTrackerPool.connection-creation-retry-interval-in-seconds=5
 
 # 2. Crear el Recurso JNDI (El nombre que usa JPA en persistence.xml)
 create-jdbc-resource  --connectionpoolid ProjectTrackerPool  jdbc/projectTracker

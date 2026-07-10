@@ -17,8 +17,13 @@ public class HttpMetricsRegistry {
         metrics.computeIfAbsent(key, ignored -> new HttpMetricValue()).record(durationNanos);
     }
 
-    public String toPrometheus() {
+    public String toPrometheus(boolean databaseUp) {
         StringBuilder output = new StringBuilder();
+
+        output.append(
+                "# HELP project_tracker_database_up Database connection availability. 1 means up, 0 means down.\n");
+        output.append("# TYPE project_tracker_database_up gauge\n");
+        output.append("project_tracker_database_up ").append(databaseUp ? 1 : 0).append('\n');
 
         output.append("# HELP project_tracker_http_requests_total Total HTTP requests handled by ProjectTracker.\n");
         output.append("# TYPE project_tracker_http_requests_total counter\n");

@@ -293,7 +293,7 @@ docker run -d `
   -p "8080:8080" `
   -p "4848:4848" `
   --name project-tracker-container `
-  --net database_default `
+  --net jakartaee-database_default `
   -e DB_HOST="project_tracker_mysql_db" `
   -e DB_PORT="3306" `
   -e DB_NAME="PROJECT_TRACKER" `
@@ -363,7 +363,7 @@ docker run -d `
   -p "9080:8080" `
   -p "9484:4848" `
   --name project-tracker-payara-container `
-  --net database_default `
+  --net jakartaee-database_default `
   -e DB_HOST="project_tracker_mysql_db" `
   -e DB_PORT="3306" `
   -e DB_NAME="PROJECT_TRACKER" `
@@ -374,10 +374,38 @@ docker run -d `
 
 Verifica:
 
-- Aplicación: `http://localhost:9080/project-tracker/`
-- Health: `http://localhost:9080/health/ready`
-- API: `http://localhost:9080/project-tracker/resources/projects`
-- Metrics: `http://localhost:9080/project-tracker/resources/observability/metrics`
+```shell
+docker logs -f project-tracker-payara-container
+```
+
+- Aplicación: `http://127.0.0.1:9080/project-tracker/`
+- Health: `http://127.0.0.1:9080/health/ready`
+- API: `http://127.0.0.1:9080/project-tracker/resources/projects`
+- Metrics: `http://127.0.0.1:9080/project-tracker/resources/observability/metrics`
+- Prometheus: `http://127.0.0.1:9090`
+- Loki: `http://127.0.0.1:3100/ready`
+- Grafana: `http://127.0.0.1:3000` (`admin` / `admin`)
+
+En Windows, si `curl http://localhost:9080/...` devuelve `socket hang up` o `Empty reply from server`, fuerza IPv4:
+
+```powershell
+curl.exe -4 http://localhost:9080/project-tracker/resources/projects
+```
+
+También puedes usar directamente `127.0.0.1`; algunas instalaciones resuelven `localhost` primero como IPv6 (`::1`) y
+Docker Desktop puede cerrar esa conexión aunque el mapeo IPv4 esté funcionando.
+
+Si usas Bruno, configura la URL de la request o la variable de entorno `baseUrl` con IPv4:
+
+```text
+http://127.0.0.1:9080/project-tracker
+```
+
+Y consume el endpoint como:
+
+```text
+{{baseUrl}}/resources/projects
+```
 
 Busca en logs:
 
@@ -405,7 +433,7 @@ cd ../../expo-00-setup/database
 docker compose up -d
 ```
 
-Luego levanta la app en la misma red `database_default`:
+Luego levanta la app en la misma red `jakartaee-database_default`:
 
 ```powershell
 docker rm -f project-tracker-container
@@ -414,7 +442,7 @@ docker run -d `
   -p "8080:8080" `
   -p "4848:4848" `
   --name project-tracker-container `
-  --net database_default `
+  --net jakartaee-database_default `
   -e DB_HOST="project_tracker_mysql_db" `
   -e DB_PORT="3306" `
   -e DB_NAME="PROJECT_TRACKER" `
@@ -425,12 +453,12 @@ docker run -d `
 
 Abre:
 
-- Aplicación: `http://localhost:8080/project-tracker/`
-- Health: `http://localhost:8080/health/ready`
-- Metrics: `http://localhost:8080/project-tracker/resources/observability/metrics`
-- Prometheus: `http://localhost:9090`
-- Loki: `http://localhost:3100/ready`
-- Grafana: `http://localhost:3000` (`admin` / `admin`)
+- Aplicación: `http://127.0.0.1:8080/project-tracker/`
+- Health: `http://127.0.0.1:8080/health/ready`
+- Metrics: `http://127.0.0.1:8080/project-tracker/resources/observability/metrics`
+- Prometheus: `http://127.0.0.1:9090`
+- Loki: `http://127.0.0.1:3100/ready`
+- Grafana: `http://127.0.0.1:3000` (`admin` / `admin`)
 
 En Grafana encontrarás el dashboard **ProjectTracker O11Y**. Para generar señales, consume la API o navega la UI varias veces; el adaptador `adapter.in.metrics` expondrá contadores y duración de requests en formato Prometheus, y Loki mostrará los logs del contenedor `project-tracker-container`.
 

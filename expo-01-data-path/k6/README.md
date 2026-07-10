@@ -1,6 +1,6 @@
 # k6 - Expo 01
 
-Prueba basica para el camino del dato. Mezcla lectura, escritura y validacion sobre la API publica de proyectos.
+Prueba básica para el camino del dato. Mezcla lectura, escritura y validación sobre la API publica de proyectos.
 
 ```powershell
 k6 run .\basic-stress.js

@@ -12,8 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
     context = "java:app/concurrent/MyContext"
 )
 @ContextServiceDefinition(
-    name = "java:app/concurrent/MyContext",
-    propagated = {ContextServiceDefinition.SECURITY, ContextServiceDefinition.APPLICATION}
+    name = "java:app/concurrent/MyContext", propagated = {ContextServiceDefinition.SECURITY, ContextServiceDefinition.APPLICATION}
 )
 public class ConcurrencyConfig {
 }

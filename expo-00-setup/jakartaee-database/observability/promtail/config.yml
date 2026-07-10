@@ -29,4 +29,4 @@ scrape_configs:
         target_label: __path__
         replacement: /var/lib/docker/containers/$1/$1-json.log
     pipeline_stages:
-      - docker: {}
+      - docker: { }

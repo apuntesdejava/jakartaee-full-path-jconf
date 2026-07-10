@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Authentication mechanism that supports stateless JWT for REST and session login for JSF.
@@ -22,6 +24,8 @@ import java.util.Set;
 @AutoApplySession
 public class HybridAuthenticationMechanism implements HttpAuthenticationMechanism {
 
+    private static final Logger LOGGER = Logger.getLogger(HybridAuthenticationMechanism.class.getName());
+
     @Inject
     private TokenService tokenService;
 
@@ -29,7 +33,9 @@ public class HybridAuthenticationMechanism implements HttpAuthenticationMechanis
     private IdentityStoreHandler identityStoreHandler;
 
     @Override
-    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context) throws AuthenticationException {
+    public AuthenticationStatus validateRequest(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                HttpMessageContext context) throws AuthenticationException {
         String path = request.getRequestURI();
 
         if (path.contains("/resources/")) {
@@ -62,7 +68,7 @@ public class HybridAuthenticationMechanism implements HttpAuthenticationMechanis
                 response.sendRedirect(request.getContextPath() + "/login.xhtml");
                 return AuthenticationStatus.SEND_CONTINUE;
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error redirecting to login page", e);
             }
         }
 

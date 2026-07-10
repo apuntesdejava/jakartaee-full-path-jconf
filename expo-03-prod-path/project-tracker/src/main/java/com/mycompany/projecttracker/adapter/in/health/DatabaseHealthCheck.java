@@ -1,41 +1,28 @@
 package com.mycompany.projecttracker.adapter.in.health;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Readiness;
-
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-import java.sql.Connection;
 
 @Readiness
 @ApplicationScoped
 public class DatabaseHealthCheck implements HealthCheck {
 
+    public static final String DATABASE_CONNECTION = "Database Connection";
+
+    @Inject
+    private DatabaseAvailability databaseAvailability;
+
     @Override
     public HealthCheckResponse call() {
-        try (Connection conn = dataSource().getConnection()) {
-            if (conn.isValid(2)) {
-                return HealthCheckResponse.named("Database Connection")
-                    .up()
-                    .withData("database", "MySQL at Docker")
-                    .build();
-            }
+        DatabaseAvailability.DatabaseStatus status = databaseAvailability.check();
 
-            return HealthCheckResponse.named("Database Connection")
-                .down()
-                .withData("error", "Conexión inválida")
-                .build();
-        } catch (Exception e) {
-            return HealthCheckResponse.named("Database Connection")
-                .down()
-                .withData("error", e.getMessage())
-                .build();
+        if (status.up()) {
+            return HealthCheckResponse.named(DATABASE_CONNECTION).up().withData("database", "MySQL at Docker").build();
         }
-    }
 
-    private DataSource dataSource() throws Exception {
-        return (DataSource) new InitialContext().lookup("jdbc/projectTracker");
+        return HealthCheckResponse.named(DATABASE_CONNECTION).down().withData("error", status.error()).build();
     }
 }

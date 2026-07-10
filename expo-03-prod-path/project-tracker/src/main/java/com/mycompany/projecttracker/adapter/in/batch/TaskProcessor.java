@@ -34,7 +34,7 @@ public class TaskProcessor implements ItemProcessor {
         Optional<Project> projectOpt = projectRepository.findById(projectId);
 
         if (projectOpt.isEmpty()) {
-            LOGGER.info(() -> "--> Batch Error: Proyecto ID " + projectId + " no encontrado. Saltando línea.");
+            LOGGER.info(() -> "--> Batch Error: Proyecto ID %d no encontrado. Saltando línea.".formatted(projectId));
             return null;
         }
 
