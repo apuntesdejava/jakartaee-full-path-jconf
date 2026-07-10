@@ -58,9 +58,8 @@ flowchart TB
     PersistenceAdapter --> Data[Jakarta Data<br/>ProjectDataRepository]
     Data --> JPA[Jakarta Persistence<br/>Entidades]
     JPA --> DB[(Base de datos)]
-
-    App --> Event[CDI Event<br/>ProjectCreatedEvent]
-    Event --> WsManager[DashboardSessionManager<br/>@Observes]
+    App --> cdi_event["CDI Event<br/>ProjectCreatedEvent"];
+    cdi_event --> WsManager[DashboardSessionManager<br/>Observes];
     WsManager --> WebSocket[Jakarta WebSocket<br/>ProjectDashboardEndpoint]
     WebSocket --> Browser
 ```
@@ -76,6 +75,6 @@ flowchart TB
 7. Abrir `ProjectApplicationService`, `ProjectCreatedEvent` y `DashboardSessionManager` para explicar el flujo CDI Event -> WebSocket.
 8. Si el entorno está estable, mostrar la actualización por WebSocket al crear un proyecto.
 
-## Mensaje para la charla
+## Resumen
 
 Esto no significa que toda aplicación deba usar Jakarta Faces. Significa que no toda aplicación empresarial necesita pagar el costo de una SPA. Para sistemas internos, administrativos y transaccionales, Jakarta EE 11 permite construir una experiencia completa con menos piezas móviles, manteniendo los casos de uso al centro y agregando adaptadores según la experiencia que se quiere entregar.

@@ -61,6 +61,6 @@ flowchart LR
 6. Abrir `ProjectRepository`, `ProjectPersistenceAdapter` y `ProjectDataRepository` para explicar el puerto de salida, la transacción y la consulta derivada `findByStatus`.
 7. Abrir `demo.cdi` para mostrar qualifiers CDI sin mezclar esa demo con el flujo principal de proyectos.
 
-## Mensaje para la charla
+## Resumen
 
 En este punto ya hay REST, JSON, validación, CDI, transacciones y persistencia trabajando bajo contratos estándar. La aplicación todavía no salió del ecosistema Jakarta EE, y aun así ya tiene una arquitectura separada por responsabilidades: los adaptadores cambian alrededor, pero los casos de uso quedan en el centro.
