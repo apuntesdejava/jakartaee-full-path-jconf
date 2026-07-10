@@ -59,7 +59,7 @@ flowchart TB
     Data --> JPA[Jakarta Persistence<br/>Entidades]
     JPA --> DB[(Base de datos)]
     App --> cdi_event["CDI Event<br/>ProjectCreatedEvent"];
-    cdi_event --> WsManager[DashboardSessionManager<br/>@Observes];
+    cdi_event --> WsManager[DashboardSessionManager<br/>Observes];
     WsManager --> WebSocket[Jakarta WebSocket<br/>ProjectDashboardEndpoint]
     WebSocket --> Browser
 ```
